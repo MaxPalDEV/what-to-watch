@@ -43,12 +43,10 @@
       </b-col>
     </div>
     <div v-if="show">
-      <div class="d-flex justify-content-center">
-      <b-col cols="6" id="search-box" v-for="movie in movies" v-bind:key="movie.id">
-        <h1>{{ movie.titre }}</h1>
-      </b-col>
+      <Movie :movies="movies" :poster="poster" />
+    test
     </div>
-    </div>
+
 
   </div>
 </template>
@@ -81,6 +79,7 @@ export default {
       platform_selected: null,
       value_date_start: null,
       value_date_end: null,
+      poster:null,
       genres: [],
       platforms: [],
       movies: [],
@@ -93,27 +92,34 @@ export default {
      searchMovie() {
        this.movies = [];
         fetch(
-        `https://api.themoviedb.org/3/discover/movie?api_key=d26ad6e614a59a93420fc409d7922d8d&language=fr-FR&sort_by=original_title.asc&release_date.gte=${this.value_date_start}&release_date.lte=${this.value_date_end}&with_genres=${this.genre_selected}&with_watch_providers=${this.platform_selected}&watch_region=FR`)
+        `https://api.themoviedb.org/3/discover/movie?api_key=d26ad6e614a59a93420fc409d7922d8d&language=fr-FR&sort_by=original_title.asc&primary_release_date.gte=${this.value_date_start}&primary_release_date.lte=${this.value_date_end}&with_genres=${this.genre_selected}&with_watch_providers=${this.platform_selected}&watch_region=FR`)
         .then((res) => res.json())
         .then((films) => {
           let x = Math.floor(Math.random() * parseInt(films.total_pages) + 1);
           fetch(
-            `https://api.themoviedb.org/3/discover/movie?api_key=d26ad6e614a59a93420fc409d7922d8d&language=fr-FR&sort_by=original_title.asc&page=${x}&release_date.gte=${this.value_date_start}&release_date.lte=${this.value_date_end}&with_genres=${this.genre_selected}&with_watch_providers=${this.platform_selected}&watch_region=FR`
+            `https://api.themoviedb.org/3/discover/movie?api_key=d26ad6e614a59a93420fc409d7922d8d&language=fr-FR&sort_by=original_title.asc&page=${x}&primary_release_date.gte=${this.value_date_start}&primary_release_date.lte=${this.value_date_end}&with_genres=${this.genre_selected}&with_watch_providers=${this.platform_selected}&watch_region=FR`
           ).then((res) => res.json())
           .then((films)=>{
-            let x = Math.floor(Math.random() * parseInt(20));
-            this.movies.push({
-              id: films.results[x].id,
-              titre: films.results[x].title
-            })
+            let x = Math.floor(Math.random() * parseInt(films.results.length));
+            /*
+            this.poster= "https://image.tmdb.org/t/p/original" + this.movies[0]*/
+
+
+            fetch(`https://api.themoviedb.org/3/movie/${films.results[x].id}?api_key=d26ad6e614a59a93420fc409d7922d8d&language=fr-FR`)
+            .then((res) => res.json())
+            .then((film) => {
+              this.movies.push(
+              film
+            )
+            this.poster= "https://image.tmdb.org/t/p/original" + film.poster_path
             this.show = true;
+            })
           })
         });
     },
   },
 };
 </script>
-
 <style>
 body {
   background-color: #cf3333;
@@ -164,6 +170,18 @@ body {
 
 .label-search {
   font-size: 26px;
+}
+
+#voteAverage{
+  display: flex;
+  font-weight: bold;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  background-color: #cf3333;
+  border-radius: 100%;
 }
 
 /* https://api.themoviedb.org/3/watch/providers/movie?api_key=d26ad6e614a59a93420fc409d7922d8d&language=fr-FR&watch_region=FR */
