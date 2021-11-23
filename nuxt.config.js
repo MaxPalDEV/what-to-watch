@@ -4,7 +4,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'what-to-watch',
+    title: "What2Watch - Qu'est ce qu'on regarde ce soir?",
     htmlAttrs: {
       lang: 'en'
     },

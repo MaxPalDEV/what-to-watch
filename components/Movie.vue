@@ -3,14 +3,21 @@
       <div id="movie-box" v-for="movie in movies" v-bind:key="movie.id">
         <b-row>
           <b-col cols="3" class="text-center">
-          <img :src="poster" alt="" width="200">
+          <div v-if="poster">
+            <img :src="poster" alt="" width="200">
+          </div>
+          <div v-if="!poster">
+            <img src="../static/noposter.png" alt="" width="200">
+          </div>
         </b-col>
         <b-col cols="8">
-          <h2>{{ movie.title }}</h2>
+          <h2><i class="fas fa-film icon-search"></i> {{ movie.title }}</h2>
+          <hr>
           <p>
-            <span>Durée : </span> {{movie.runtime}} min. |
-            <span>Origine : </span> <span v-if="movie.production_countries != null">{{ movie.production_countries[0].iso_3166_1 }}</span>
+            <span><i class="far fa-clock icon-search"></i> Durée : </span> {{movie.runtime}} min. |
+            <span><i class="fas fa-globe-europe icon-search"></i> Origine : </span> <span v-if="movie.production_countries[0]">{{ movie.production_countries[0].iso_3166_1 }}</span> <span v-if="!movie.production_countries[0]">Non Communiqué</span>
           </p>
+          <hr>
           <p>
             {{ movie.overview }}
           </p>

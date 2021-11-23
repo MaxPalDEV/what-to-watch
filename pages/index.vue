@@ -14,15 +14,17 @@
 
     <div class="d-flex justify-content-center">
         <div class="text-center button-box d-flex" v-if="show">
-          <button id="newsearch-button" class="button-custom d-flex" @click="newSearch"><span class="logo-button"><i class="fas fa-search"></i>&nbsp;</span><span class="align-self-center ml-2"> Nouvelle Recherche</span></button>  <button id="refresh-button" class="button-custom d-flex" @click="searchMovie"><span class="logo-button"><i class="fas fa-sync-alt"></i>&nbsp;</span><span class="align-self-center ml-2">Autre Proposition</span></button>
+          <button id="newsearch-button" class="button-custom d-flex" @click="newSearch"><span class="logo-button"><i class="fas fa-search wobble-hor-bottom"></i>&nbsp;</span><span class="align-self-center ml-2"> Nouvelle Recherche</span></button>  <button id="refresh-button" class="button-custom d-flex" @click="searchMovie"><span class="logo-button"><i class="fas fa-sync-alt rotate-scale-up"></i>&nbsp;</span><span class="align-self-center ml-2">Autre Proposition</span></button>
         </div>
+
       <div id="search-box" v-if="!show">
+        <b-alert v-if="error" show variant="danger">{{ error_message }}</b-alert>
         <b-row>
-<b-col cols="8">
-           <b-col cols="10">
-          <label class="label-search" for="genre-select"><i class="fas fa-arrow-circle-right"></i> Quel genre de film ?</label>
+      <b-col cols="7" class="filter-box">
+           <b-col>
+          <label class="label-search" for="genre-select"><i class="fas fa-arrow-circle-right icon-search"></i> Quel genre de film ?</label>
         </b-col>
-        <b-col cols="10" class="ml-4">
+        <b-col class="ml-4">
           <b-form-select v-model="genre_selected" name="genre-select" class="mb-3 input-form">
             <template #first>
               <b-form-select-option :value="null" disabled>-- Sélectionner un genre --</b-form-select-option>
@@ -30,11 +32,11 @@
             <b-form-select-option :value="genre.id" v-for="genre in genres.genres" v-bind:key="genre.id">{{ genre.name }}</b-form-select-option>
           </b-form-select>
         </b-col>
-        <b-col cols="10" class="mt-1">
-          <p class="label-search"><i class="fas fa-arrow-circle-right"></i> Période de sortie : </p>
+        <b-col class="mt-1">
+          <p class="label-search"><i class="fas fa-arrow-circle-right icon-search"></i> Période de sortie : </p>
         </b-col>
-        <b-col cols="10">
-          <b-row class="ml-4">
+        <b-col >
+          <b-row class="ml-4" style="flex-wrap: nowrap;">
             <b-form-select v-model="value_date_start" name="genre-select" class="mb-3 input-form-date">
             <template #first>
               <b-form-select-option :value="null" disabled>-- Année --</b-form-select-option>
@@ -50,10 +52,10 @@
           </b-form-select>
           </b-row>
         </b-col>
-        <b-col cols="10" class="mt-1">
-          <p class="label-search"><i class="fas fa-arrow-circle-right"></i> Quelle plateforme ? </p>
+        <b-col class="mt-1">
+          <p class="label-search"><i class="fas fa-arrow-circle-right icon-search"></i> Quelle plateforme ? </p>
         </b-col>
-        <b-col cols="10" class="ml-4">
+        <b-col class="ml-4">
           <b-form-select v-model="platform_selected" name="platform-select" class="mb-3 input-form">
             <template #first>
               <b-form-select-option :value="null" disabled>-- Sélectionner une plateforme --</b-form-select-option>
@@ -91,12 +93,10 @@
 </template>
 
 <script>
-
-
 export default {
 
   async fetch() {
-    (this.genres = await fetch(
+   (this.genres = await fetch(
       "https://api.themoviedb.org/3/genre/movie/list?api_key=d26ad6e614a59a93420fc409d7922d8d&language=fr-FR"
     ).then((res) => {
       if (res.ok) {
@@ -118,6 +118,8 @@ export default {
   },
   data() {
     return {
+      error:false,
+      error_message:'',
       show:false,
       genre_selected: null,
       platform_selected: null,
@@ -134,7 +136,17 @@ export default {
   },
   methods: {
      searchMovie() {
-       this.movies = [];
+       if (this.genre_selected == null || this.value_date_start == null || this.value_date_end == null || this.platform_selected == null) {
+         this.error = true
+         this.error_message = "Veuillez renseigner tous les champs !"
+       }
+       else if(this.value_date_start > this.value_date_end){
+         this.error = true
+         this.error_message = "La date de début est supérieure à la date de fin !"
+       }
+       else {
+         this.error = false;
+         this.movies = [];
         fetch(
         `https://api.themoviedb.org/3/discover/movie?api_key=d26ad6e614a59a93420fc409d7922d8d&language=fr-FR&sort_by=original_title.asc&primary_release_date.gte=${this.value_date_start}-01-01&primary_release_date.lte=${this.value_date_end}-12-31&with_genres=${this.genre_selected}&with_watch_providers=${this.platform_selected}&watch_region=FR`)
         .then((res) => res.json())
@@ -155,26 +167,33 @@ export default {
               this.movies.push(
               film
             )
+
             this.poster= "https://image.tmdb.org/t/p/original" + film.poster_path
+
+
             this.show = true;
             })
           })
         });
+       }
     },
     newSearch(){
       this.show = false;
-    }
+    },
   },
   computed : {
     years () {
       const year = new Date().getFullYear()
       return Array.from({length: year - 1969}, (value, index) => 1970 + index)
-    }
+    },
   }
 };
 </script>
 
 <style>
+/* STYLE DU BOUTON SEARCH */
+@import '~/assets/style/search_button.css';
+
 body {
   background: linear-gradient(to bottom,rgba(246,66,66,.8) 0,rgba(246,66,66,.8) 100%),url(../static/bgwhattowatch.jpg); /*#cf3333;*/
   background-position: center;
@@ -220,17 +239,18 @@ body {
 }
 
 .input-form {
-  max-width: auto;
+  /*max-width: 308px;*/
   margin-left: 15px;
 }
 
 .input-form-date {
-  max-width: 125px;
+  max-width: 131px;
   margin-left: 15px;
 }
 
 .label-search {
   font-size: 26px;
+  margin-bottom: 0.5rem;
 }
 
 .playBtn{
@@ -258,268 +278,18 @@ body {
   padding: 15px;
 }
 
-/** BTN PLAY */
-
-.clapboard{
-  background-image: url(../static/clapperboard.png);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 50%;
+.icon-search{
+  color: #fbb540;
+  text-shadow: 1px 1px 2px black;
 }
 
-.clapboard:hover{
-  background-image: url(../static/clapperboard_close.png);
-  cursor: pointer;
-}
-
-#wrapper{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.my-super-cool-btn{
-  position:relative;
-  text-decoration:none;
-  color:#fff;
-  letter-spacing:1px;
-  font-size:2rem;
-  box-sizing:border-box;
-}
-.my-super-cool-btn span{
-  position:relative;
-  box-sizing:border-box;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:200px;
-  height:200px;
-}
-.my-super-cool-btn span:before{
-  content:'';
-  width:100%;
-  height:100%;
-  display:block;
-  position:absolute;
-  border-radius:100%;
-  border:7px solid #F3CF14;
-  box-sizing:border-box;
-  transition: all .85s cubic-bezier(0.25, 1, 0.33, 1);
-  box-shadow: 0 30px 85px rgba(0,0,0,0.14), 0 15px 35px rgba(0,0,0,0.14);
-}
-.my-super-cool-btn:hover span:before{
-  transform:scale(0.8);
-  box-shadow: 0 20px 55px rgba(0,0,0,0.14), 0 15px 35px rgba(0,0,0,0.14);
-}
-.my-super-cool-btn .dots-container{
-  opacity:0;
-  animation: intro 1.6s;
-  animation-fill-mode: forwards;
-}
-.my-super-cool-btn .dot{
-  width:8px;
-  height:8px;
-  display:block;
-  background-color:#F3CF14;
-  border-radius:100%;
-  position:absolute;
-  transition: all .85s cubic-bezier(0.25, 1, 0.33, 1);
-}
-.my-super-cool-btn .dot:nth-child(1){
-  top:50px;
-  left:50px;
-  transform:rotate(-140deg);
-  animation: swag1-out 0.3s;
-  animation-fill-mode: forwards;
-  opacity:0;
-}
-.my-super-cool-btn .dot:nth-child(2){
-  top:50px;
-  right:50px;
-  transform:rotate(140deg);
-  animation: swag2-out 0.3s;
-  animation-fill-mode: forwards;
-  opacity:0;
-}
-.my-super-cool-btn .dot:nth-child(3){
-  bottom:50px;
-  left:50px;
-  transform:rotate(140deg);
-  animation: swag3-out 0.3s;
-  animation-fill-mode: forwards;
-  opacity:0;
-}
-.my-super-cool-btn .dot:nth-child(4){
-  bottom:50px;
-  right:50px;
-  transform:rotate(-140deg);
-  animation: swag4-out 0.3s;
-  animation-fill-mode: forwards;
-  opacity:0;
-}
-.my-super-cool-btn:hover .dot:nth-child(1){
-  animation: swag1 0.3s;
-  animation-fill-mode: forwards;
-}
-.my-super-cool-btn:hover .dot:nth-child(2){
-  animation: swag2 0.3s;
-  animation-fill-mode: forwards;
-}
-.my-super-cool-btn:hover .dot:nth-child(3){
-  animation: swag3 0.3s;
-  animation-fill-mode: forwards;
-}
-.my-super-cool-btn:hover .dot:nth-child(4){
-  animation: swag4 0.3s;
-  animation-fill-mode: forwards;
-}
-@keyframes intro {
-   0% {
-     opacity:0;
-  }
-  100% {
-     opacity:1;
-  }
-}
-@keyframes swag1 {
-   0% {
-     top:50px;
-     left:50px;
-     width:8px;
-  }
-  50% {
-    width:30px;
-    opacity:1;
-  }
-  100% {
-     top:20px;
-     left:20px;
-     width:8px;
-     opacity:1;
-  }
-}
-@keyframes swag1-out {
-   0% {
-     top:20px;
-     left:20px;
-     width:8px;
-  }
-  50% {
-     width:30px;
-    opacity:1;
-  }
-  100% {
-     top:50px;
-     left:50px;
-     width:8px;
-    opacity:0;
-  }
-}
-@keyframes swag2 {
-   0% {
-     top:50px;
-     right:50px;
-     width:8px;
-  }
-  50% {
-    width:30px;
-    opacity:1;
-  }
-  100% {
-     top:20px;
-     right:20px;
-     width:8px;
-     opacity:1;
-  }
-}
-@keyframes swag2-out {
-   0% {
-     top:20px;
-     right:20px;
-     width:8px;
-  }
-  50% {
-     width:30px;
-    opacity:1;
-  }
-  100% {
-     top:50px;
-     right:50px;
-     width:8px;
-    opacity:0;
-  }
-}
-@keyframes swag3 {
-   0% {
-     bottom:50px;
-     left:50px;
-     width:8px;
-  }
-  50% {
-    width:30px;
-    opacity:1;
-  }
-  100% {
-     bottom:20px;
-     left:20px;
-     width:8px;
-     opacity:1;
-  }
-}
-@keyframes swag3-out {
-   0% {
-     bottom:20px;
-     left:20px;
-     width:8px;
-  }
-  50% {
-     width:30px;
-    opacity:1;
-  }
-  100% {
-     bottom:50px;
-     left:50px;
-     width:8px;
-    opacity:0;
-  }
-}
-@keyframes swag4 {
-   0% {
-     bottom:50px;
-     right:50px;
-     width:8px;
-  }
-  50% {
-    width:30px;
-    opacity:1;
-  }
-  100% {
-     bottom:20px;
-     right:20px;
-     width:8px;
-     opacity:1;
-  }
-}
-@keyframes swag4-out {
-   0% {
-     bottom:20px;
-     right:20px;
-     width:8px;
-  }
-  50% {
-     width:30px;
-    opacity:1;
-  }
-  100% {
-     bottom:50px;
-     right:50px;
-     width:8px;
-    opacity:0;
-  }
+.filter-box{
+  max-width: 450px;
+  margin-right: 30px;
 }
 
 /** Boutons recherche et refresh */
 .button-custom{
-
   border: none;
   color: white;
   padding: 15px 32px;
@@ -528,7 +298,11 @@ body {
   display: inline-block;
   font-size: 18px;
   border-radius: 50px;
-  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  box-shadow: rgba(75, 75, 75, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+
+.button-custom:active{
+  box-shadow: rgba(75, 75, 75, 0.12) 3px 3px 6px 0px inset, rgba(0, 0, 0, 0.24) -3px -3px 6px 1px inset;
 }
 
 #newsearch-button{
@@ -543,6 +317,105 @@ body {
 .logo-button{
   font-size: 25px;
   border-right: 3px solid whitesmoke;
+}
+
+#refresh-button:hover .rotate-scale-up {
+	-webkit-animation: rotate-scale-up 0.65s linear both;
+	        animation: rotate-scale-up 0.65s linear both;
+}
+
+ @-webkit-keyframes rotate-scale-up {
+  0% {
+    -webkit-transform: scale(1) rotateZ(0);
+            transform: scale(1) rotateZ(0);
+  }
+  50% {
+    -webkit-transform: scale(1) rotateZ(180deg);
+            transform: scale(1) rotateZ(180deg);
+  }
+  100% {
+    -webkit-transform: scale(1) rotateZ(360deg);
+            transform: scale(1) rotateZ(360deg);
+  }
+}
+@keyframes rotate-scale-up {
+  0% {
+    -webkit-transform: scale(1) rotateZ(0);
+            transform: scale(1) rotateZ(0);
+  }
+  50% {
+    -webkit-transform: scale(1) rotateZ(180deg);
+            transform: scale(1) rotateZ(180deg);
+  }
+  100% {
+    -webkit-transform: scale(1) rotateZ(360deg);
+            transform: scale(1) rotateZ(360deg);
+  }
+}
+
+/* ANIMATED TITLE */
+#newsearch-button:hover .wobble-hor-bottom {
+	-webkit-animation: wobble-hor-bottom 0.8s both;
+	        animation: wobble-hor-bottom 0.8s both;
+}
+
+ @-webkit-keyframes wobble-hor-bottom {
+  0%,
+  100% {
+    -webkit-transform: translateX(0%);
+            transform: translateX(0%);
+    -webkit-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
+  }
+  15% {
+    -webkit-transform: translateX(-15px) rotate(-6deg);
+            transform: translateX(-15px) rotate(-6deg);
+  }
+  30% {
+    -webkit-transform: translateX(4px) rotate(6deg);
+            transform: translateX(4px) rotate(6deg);
+  }
+  45% {
+    -webkit-transform: translateX(-15px) rotate(-3.6deg);
+            transform: translateX(-15px) rotate(-3.6deg);
+  }
+  60% {
+    -webkit-transform: translateX(4px) rotate(2.4deg);
+            transform: translateX(4px) rotate(2.4deg);
+  }
+  75% {
+    -webkit-transform: translateX(-6px) rotate(-1.2deg);
+            transform: translateX(-6px) rotate(-1.2deg);
+  }
+}
+@keyframes wobble-hor-bottom {
+  0%,
+  100% {
+    -webkit-transform: translateX(0%);
+            transform: translateX(0%);
+    -webkit-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
+  }
+  15% {
+    -webkit-transform: translateX(-15px) rotate(-6deg);
+            transform: translateX(-15px) rotate(-6deg);
+  }
+  30% {
+    -webkit-transform: translateX(4px) rotate(6deg);
+            transform: translateX(4px) rotate(6deg);
+  }
+  45% {
+    -webkit-transform: translateX(-15px) rotate(-3.6deg);
+            transform: translateX(-15px) rotate(-3.6deg);
+  }
+  60% {
+    -webkit-transform: translateX(4px) rotate(2.4deg);
+            transform: translateX(4px) rotate(2.4deg);
+  }
+  75% {
+    -webkit-transform: translateX(-6px) rotate(-1.2deg);
+            transform: translateX(-6px) rotate(-1.2deg);
+  }
 }
 
 /** MEDIA QUERIES */
