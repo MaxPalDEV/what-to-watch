@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex justify-content-center">
-      <div id="movie-box" v-for="movie in movies" v-bind:key="movie.id">
+      <div id="movie-box">
         <b-row>
           <b-col cols="3" class="text-center">
           <div v-if="poster">
@@ -11,20 +11,20 @@
           </div>
         </b-col>
         <b-col cols="8">
-          <h2><i class="fas fa-film icon-search"></i> {{ movie.title }}</h2>
+          <h2><i class="fas fa-film icon-search"></i> {{ movies.title }}</h2>
           <hr>
           <p>
-            <span><i class="far fa-clock icon-search"></i> Durée : </span> {{movie.runtime}} min. |
-            <span><i class="fas fa-globe-europe icon-search"></i> Origine : </span> <span v-if="movie.production_countries[0]">{{ movie.production_countries[0].iso_3166_1 }}</span> <span v-if="!movie.production_countries[0]">Non Communiqué</span>
+            <span><i class="far fa-clock icon-search"></i> Durée : </span> {{movies.runtime}} min. |
+            <span><i class="fas fa-globe-europe icon-search"></i> Origine : </span> <span v-if="movies.production_countries[0]">{{ movies.production_countries[0].iso_3166_1 }}</span> <span v-if="!movies.production_countries[0]">Non Communiqué</span>
           </p>
           <hr>
           <p>
-            {{ movie.overview }}
+            {{ movies.overview }}
           </p>
         </b-col>
         <b-col cols="1">
           <p id="voteAverage">
-            {{ movie.vote_average }}
+            {{ movies.vote_average }}
           </p>
         </b-col>
         </b-row>

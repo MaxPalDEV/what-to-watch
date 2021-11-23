@@ -128,7 +128,7 @@ export default {
       poster:null,
       genres: [],
       platforms: [],
-      movies: [],
+      movies: Object,
     };
   },
   mounted() {
@@ -146,7 +146,7 @@ export default {
        }
        else {
          this.error = false;
-         this.movies = [];
+
         fetch(
         `https://api.themoviedb.org/3/discover/movie?api_key=d26ad6e614a59a93420fc409d7922d8d&language=fr-FR&sort_by=original_title.asc&primary_release_date.gte=${this.value_date_start}-01-01&primary_release_date.lte=${this.value_date_end}-12-31&with_genres=${this.genre_selected}&with_watch_providers=${this.platform_selected}&watch_region=FR`)
         .then((res) => res.json())
@@ -164,12 +164,12 @@ export default {
             fetch(`https://api.themoviedb.org/3/movie/${films.results[x].id}?api_key=d26ad6e614a59a93420fc409d7922d8d&language=fr-FR`)
             .then((res) => res.json())
             .then((film) => {
-              this.movies.push(
-              film
-            )
+
+              this.movies = film
+
 
             this.poster= "https://image.tmdb.org/t/p/original" + film.poster_path
-
+            console.log(this.movies)
 
             this.show = true;
             })
