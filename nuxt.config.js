@@ -11,7 +11,7 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      { hid: 'description', name: 'description', content: 'Générateur de film à regarder selon des filtres prédéfinis. Dites nous votre titre de film et votre plateforme, on se charge du reste !' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [

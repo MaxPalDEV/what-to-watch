@@ -7,7 +7,7 @@
             <img :src="poster" alt="" width="200">
           </div>
           <div v-if="!poster">
-            <img src="../static/noposter.png" alt="" width="200">
+            <img src="../static/noposter.png" alt="poster" class="image-rendering: -webkit-optimize-contrast!important;" width="200">
           </div>
         </b-col>
         <b-col cols="8">
@@ -15,14 +15,19 @@
           <hr>
           <p>
             <span><i class="far fa-clock icon-search"></i> Durée : </span> {{movies.runtime}} min. |
-            <span><i class="fas fa-globe-europe icon-search"></i> Origine : </span> <span v-if="movies.production_countries[0]">{{ movies.production_countries[0].iso_3166_1 }}</span> <span v-if="!movies.production_countries[0]">Non Communiqué</span>
+            <span><i class="fas fa-globe-europe icon-search"></i> Origine : </span> <span v-if="movies.production_countries[0]">{{ movies.production_countries[0].iso_3166_1 }}</span> <span v-if="!movies.production_countries[0]">Non Communiqué</span> |
+            <span><i class="far fa-calendar-alt icon-search"></i> Sortie le : {{ new Date(movies.release_date).toLocaleDateString('fr-FR') }}</span>
           </p>
           <hr>
           <p>
             {{ movies.overview }}
           </p>
         </b-col>
-        <b-col cols="1">
+        <b-col cols="1" class="note-mobile">
+          <div class="text-center">
+            <hr>
+            <span>Note des spectateurs</span>
+          </div>
           <p id="voteAverage">
             {{ movies.vote_average }}
           </p>
@@ -39,7 +44,7 @@ export default {
   }
 }
 </script>
-<style scope>
+<style>
   .page-enter-active,
 .page-leave-active {
   transition: opacity 0.5s;
@@ -47,6 +52,10 @@ export default {
 .page-enter,
 .page-leave-active {
   opacity: 0;
+}
+
+.note-mobile div{
+  display: none;
 }
 
 #movie-box{
@@ -72,4 +81,37 @@ export default {
   border-radius: 100%;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
 }
+
+@media (max-width: 826px) {
+  .note-mobile div{
+    display: block;
+  }
+
+
+  #movie-box .row{
+    flex-direction: column;
+  }
+
+  #movie-box .row .col-3,#movie-box .row .col-8,#movie-box .row .col-1 {
+    max-width: 100%;
+  }
+
+  #movie-box .row .col-8{
+    margin-top: 5px;
+  }
+
+
+
+  #voteAverage{
+    margin-top: 5px;
+    margin-left: 45%;
+  }
+}
+
+@media (max-width: 558px) {
+  #movie-box .row .col-8 p{
+    font-size: 12px;
+  }
+}
+
 </style>

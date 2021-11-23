@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-center">
       <b-col cols="8" id="headerApp">
         <b-row class="justify-content-center">
-          <img src="../static/popcorn.png" alt="" width="100" />
+          <img src="../static/popcorn.png" alt="popcorn" class="image-rendering: -webkit-optimize-contrast;" width="105" />
           <h1 class="align-self-center" id="titleApp">What2Watch</h1>
         </b-row>
         <p class="text-center" id="sloganApp">
@@ -62,6 +62,9 @@
             </template>
             <b-form-select-option :value="platform.provider_id" v-for="platform in platforms.results" v-bind:key="platform.provider_id">{{ platform.provider_name }}</b-form-select-option>
           </b-form-select>
+        </b-col>
+        <b-col class="mt-1 btn-mobile text-center">
+          <button id="search-mobile" class="button-mobile d-flex" @click="searchMovie"><span class="logo-button"><i class="fas fa-search wobble-hor-bottom"></i>&nbsp;</span><span class="align-self-center ml-2"> Chercher un film</span></button>
         </b-col>
         </b-col>
         <b-col cols="4" class="playBox">
@@ -238,13 +241,17 @@ body {
   margin-right: 0;
 }
 
+.btn-mobile{
+  display: none;
+}
+
 .input-form {
   /*max-width: 308px;*/
   margin-left: 15px;
 }
 
 .input-form-date {
-  max-width: 131px;
+  max-width: 152px;
   margin-left: 15px;
 }
 
@@ -318,6 +325,10 @@ body {
   font-size: 25px;
   border-right: 3px solid whitesmoke;
 }
+#search-mobile{
+    background-color: #fbb540;
+    margin-left: 24%;
+  }
 
 #refresh-button:hover .rotate-scale-up {
 	-webkit-animation: rotate-scale-up 0.65s linear both;
@@ -420,7 +431,83 @@ body {
 
 /** MEDIA QUERIES */
 
-@media (max-width: 1300px) {
 
+
+@media (max-width: 570px) {
+  #sloganApp{
+    font-size: 22px;
+    margin-top: 5px;
+  }
+
+  .label-search{
+    font-size: 20px;
+  }
+
+  .custom-select{
+    font-size: 10px;
+  }
 }
+
+@media (max-width: 558px) {
+  .btn-mobile{
+
+    display: block;
+  }
+
+  .logo-button{
+    font-size: 14px;
+  }
+
+  .h2, h2{
+    font-size: 20px
+  }
+
+  .button-custom{
+    font-size: 12px!important;
+    padding: 8px 12px;
+  }
+
+  .button-mobile{
+    border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  border-radius: 50px;
+  box-shadow: rgba(75, 75, 75, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    padding: 6px 19px;
+  }
+
+  #sloganApp{
+    font-size: 14px;
+    margin-top: 5px;
+  }
+
+  .custom-select{
+    font-size: 15px;
+  }
+
+    .playBox{
+    display: none;
+  }
+
+  #search-box .row .col-7{
+    flex:unset ;
+  }
+}
+
+@media (max-width: 826px) and (min-width: 558) {
+  .button-custom{
+    font-size: 14px;
+    padding: 11px 22px;
+  }
+
+  .logo-button{
+    font-size: 18px;
+  }
+}
+
+
 </style>
